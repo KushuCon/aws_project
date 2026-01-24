@@ -273,7 +273,7 @@ def approve(req_id):
                 notify("Request Approved", f"{u.get('name')}: Your request for '{b.get('title')}' approved!")
     except ClientError as e:
         print(f"Approve error: {e}")
-    return redirect(url_for('requests'))
+    return redirect(url_for('view_requests'))
 
 # MY BOOKS
 @app.route("/my-books")
