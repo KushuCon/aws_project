@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Greenfield University Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .about-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .about-header {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .about-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .about-header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .about-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .about-section p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .how-it-works {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .step-content p {
+            color: #666;
+            margin: 0;
+        }
+
+        .characteristics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .char-item {
+            background: #f0f4ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .char-item .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .char-item p {
+            color: #333;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .about-footer {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .about-footer a {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .about-footer a:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Greenfield Library</div>
+    <div class="navbar-nav">
+        <a href="/about">About</a>
+        {% if session.get('user_id') %}
+            {% if session.get('role') == 'admin' %}
+                <a href="/admin">Dashboard</a>
+            {% else %}
+                <a href="/student">Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="logout-btn">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="about-container">
+    <!-- Header -->
+    <div class="about-header">
+        <h1>📚 Greenfield University Library</h1>
+        <p>Your Digital Gateway to Learning Resources</p>
+    </div>
+
+    <!-- Problem & Solution -->
+    <div class="about-section">
+        <h2>🎯 Our Mission</h2>
+        <p>
+            The BSC Computer Science department at Greenfield University faced a critical challenge: 
+            a growing student population struggling to access essential textbooks due to limited physical 
+            copies and long waiting queues. This system was created to solve that problem.
+        </p>
+        <p>
+            <strong>Greenfield University Library</strong> is a cloud-native digital platform that provides 
+            instant access to learning materials across multiple subjects, eliminating wait times and ensuring 
+            every student has equal access to knowledge.
+        </p>
+    </div>
+
+    <!-- How It Works -->
+    <div class="about-section">
+        <h2>⚙️ How It Works</h2>
+        <div class="how-it-works">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Student Registration</h3>
+                    <p>Create your account with a simple sign-up process using your university email.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Browse Catalog</h3>
+                    <p>Explore our digital catalog of e-books organized by subjects and categories.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Request Books</h3>
+                    <p>Request any book you need. Your request goes to the library admin for approval.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Get Approved & Download</h3>
+                    <p>Once approved, you receive an email notification and can instantly download the book.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features -->
+    <div class="about-section">
+        <h2>✨ Key Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>📖 Digital Catalog</h3>
+                <p>Extensive collection of e-books across Engineering, Mathematics, and Science subjects.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔍 Smart Search</h3>
+                <p>Find books instantly by title, author, or category. Filter and sort easily.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📝 Request System</h3>
+                <p>Simple request process with real-time status tracking and notifications.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📧 Email Notifications</h3>
+                <p>Instant email alerts when books are approved or requests are updated.</p>
+            </div>
+            <div class="feature-card">
+                <h3>⚡ Instant Access</h3>
+                <p>No queues, no waiting. Download approved books instantly from anywhere.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔐 Secure</h3>
+                <p>Role-based access control ensures data security and privacy for all users.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Characteristics -->
+    <div class="about-section">
+        <h2>🌟 System Characteristics</h2>
+        <div class="characteristics">
+            <div class="char-item">
+                <div class="icon">👥</div>
+                <p>Dual Role System</p>
+            </div>
+            <div class="char-item">
+                <div class="icon">🎓</div>
+                <p>Student Portal</p>
+            </div>
+            <div class="char-item">
+                <div class="icon">👨‍💼</div>
+                <p>Admin Dashboard</p>
+            </div>
+            <div class="char-item">
+                <div class="icon">🔄</div>
+                <p>Request Workflow</p>
+            </div>
+            <div class="char-item">
+                <div class="icon">📱</div>
+                <p>Responsive Design</p>
+            </div>
+            <div class="char-item">
+                <div class="icon">☁️</div>
+                <p>Cloud Ready</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Stack -->
+    <div class="about-section">
+        <h2>💻 Technology Stack</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Backend</h3>
+                <p><strong>Python + Flask</strong> - Lightweight, scalable web framework.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Database</h3>
+                <p><strong>SQLite (Local)</strong> - Simple and efficient data storage.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Frontend</h3>
+                <p><strong>HTML5 + CSS3</strong> - Beautiful, responsive user interface.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Email</h3>
+                <p><strong>Gmail SMTP</strong> - Reliable email notifications for users.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Deployment</h3>
+                <p><strong>AWS Ready</strong> - EC2, RDS, SES for production deployment.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Security</h3>
+                <p><strong>Session Management</strong> - Secure authentication and authorization.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact -->
+    <div class="about-section">
+        <h2>🚀 Social & Business Impact</h2>
+        <p>
+            <strong>For Students:</strong> Instant access to learning materials eliminates frustration and 
+            supports better academic performance. No more waiting in queues or missing out on resources.
+        </p>
+        <p>
+            <strong>For Faculty:</strong> Efficient request management and tracking simplifies administration 
+            and provides insights into resource usage patterns.
+        </p>
+        <p>
+            <strong>For the University:</strong> Reduced physical storage needs, improved resource utilization, 
+            and enhanced student satisfaction. Scalable platform ready for growth.
+        </p>
+    </div>
+
+    <!-- Challenges Solved -->
+    <div class="about-section">
+        <h2>✅ Challenges Solved</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>❌ Long Wait Times</h3>
+                <p>✅ Instant approval and download process.</p>
+            </div>
+            <div class="feature-card">
+                <h3>❌ Limited Copies</h3>
+                <p>✅ Unlimited digital access to all books.</p>
+            </div>
+            <div class="feature-card">
+                <h3>❌ Poor Communication</h3>
+                <p>✅ Real-time email notifications to all users.</p>
+            </div>
+            <div class="feature-card">
+                <h3>❌ No Tracking</h3>
+                <p>✅ Complete request history and status tracking.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="about-footer">
+        <h2>Ready to Get Started?</h2>
+        <p>Join Greenfield University Library and unlock instant access to your learning resources.</p>
+        {% if session.get('user_id') %}
+            {% if session.get('role') == 'admin' %}
+                <a href="/admin">Back to Dashboard</a>
+            {% else %}
+                <a href="/student">Back to Dashboard</a>
+            {% endif %}
+        {% else %}
+            <a href="/login">Go to Login</a>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/about">About</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/students" class="btn-back">← Back to Students</a>
+
+    <!-- Student Info Card -->
+    <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+            <div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
+            </div>
+            <div>
+                <h1 style="margin: 0 0 0.5rem 0; color: #333;">{{ student.name }}</h1>
+                <p style="margin: 0; color: #666; font-size: 1rem;">📧 {{ student.email }}</p>
+                <p style="margin: 0.5rem 0 0 0; color: #888; font-size: 0.9rem;">Student ID: #{{ student.id }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid #3498db;">
+            <div style="font-size: 2rem; color: #3498db; font-weight: bold;">{{ total_requests }}</div>
+            <p style="margin: 0.5rem 0 0 0; color: #666;">Total Requests</p>
+        </div>
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid #27ae60;">
+            <div style="font-size: 2rem; color: #27ae60; font-weight: bold;">{{ approved_count }}</div>
+            <p style="margin: 0.5rem 0 0 0; color: #666;">Approved Books</p>
+        </div>
+        <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; border-left: 4px solid #f39c12;">
+            <div style="font-size: 2rem; color: #f39c12; font-weight: bold;">{{ pending_count }}</div>
+            <p style="margin: 0.5rem 0 0 0; color: #666;">Pending Requests</p>
+        </div>
+    </div>
+
+    <!-- Request History -->
+    <div class="table-container">
+        <h2>📋 Request History</h2>
+        
+        {% if requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>#{{ req.id }}</td>
+                        <td><strong>{{ req.title }}</strong></td>
+                        <td>{{ req.author }}</td>
+                        <td>
+                            <span style="background: #f0f4ff; color: #667eea; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">{{ req.category }}</span>
+                        </td>
+                        <td>
+                            {% if req.status == "pending" %}
+                                <span class="status-pending">⏳ Pending</span>
+                            {% else %}
+                                <span class="status-approved">✓ Approved</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.status == "pending" %}
+                                <a href="/approve/{{ req.id }}" class="btn-approve" style="display: inline-block;">✓ Approve</a>
+                            {% else %}
+                                <span style="color: #888;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>No requests from this student yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

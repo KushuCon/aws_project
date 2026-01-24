@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library</div>
+    <div class="navbar-nav">
+        <a href="/student">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/student" class="btn-back">← Back to Dashboard</a>
+
+    <div class="books-container">
+        <h1>✅ My Approved Books</h1>
+        
+        {% if books %}
+            <div class="books-grid">
+            {% for b in books %}
+                <div class="book-card">
+                    <div class="book-title">{{ b.title }}</div>
+                    <div class="book-author">by {{ b.author }}</div>
+                    <div style="color: #888; font-size: 0.8rem;">{{ b.category }} • Sem {{ b.semester }}</div>
+                    <div style="margin-top: 0.5rem; padding: 0.3rem; background: #d1fae5; border-radius: 4px; text-align: center; font-weight: 600; font-size: 0.75rem; color: #065f46;">
+                        ✓ Approved
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <p>No approved books yet. <a href="/books">Request a book</a> to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

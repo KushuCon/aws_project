@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Book - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="auth-container" style="min-height: calc(100vh - 60px);">
+    <div class="auth-box">
+        <h1>� Add New Book</h1>
+        <p class="subtitle">Add a new book to the library collection</p>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text" id="title" name="title" placeholder="Enter book title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author Name</label>
+                <input type="text" id="author" name="author" placeholder="Enter author name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="semester">Semester</label>
+                <select id="semester" name="semester" required>
+                    <option value="">Select a semester...</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category/Subject</label>
+                <select id="category" name="category" required>
+                    <option value="">Select a category...</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="MBA">MBA</option>
+                    <option value="Management">Management</option>
+                    <option value="Computer Science">Computer Science</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Add Book</button>
+            </div>
+        </form>
+
+        <div class="auth-links">
+            <a href="/admin">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

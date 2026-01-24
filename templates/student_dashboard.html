@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library</div>
+    <div class="navbar-nav">
+        <a href="/student">Dashboard</a>
+        <a href="/about">About</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome to Student Portal</h1>
+        <p>Explore the library collection and request books</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <form method="get" action="/books" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <input type="text" name="search" placeholder="🔍 Search by title or author..." style="flex: 1; min-width: 200px; padding: 0.9rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            <button type="submit" style="padding: 0.9rem 2rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.3s;">Search</button>
+            <a href="/books" style="padding: 0.9rem 2rem; background: #95a5a6; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; align-self: center; transition: background 0.3s;">Clear</a>
+        </form>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="/books" class="dashboard-card">
+            <div class="dashboard-card-icon">🔍</div>
+            <h3>Browse Books</h3>
+            <p>Discover and request available books</p>
+        </a>
+
+        <a href="/my-books" class="dashboard-card">
+            <div class="dashboard-card-icon">✅</div>
+            <h3>My Books</h3>
+            <p>View your approved and downloaded books</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

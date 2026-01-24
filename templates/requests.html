@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Requests - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/admin" class="btn-back">← Back to Dashboard</a>
+
+    <div class="table-container">
+        <h1>📋 Book Requests</h1>
+        
+        {% if requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Book Title</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td>{{ r.name }}</td>
+                        <td>{{ r.email }}</td>
+                        <td>{{ r.title }}</td>
+                        <td>
+                            {% if r.status == "pending" %}
+                                <span class="status-pending">⏳ Pending</span>
+                            {% else %}
+                                <span class="status-approved">✓ Approved</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.status == "pending" %}
+                                <a href="/approve/{{ r.id }}" class="btn-approve">✓ Approve</a>
+                            {% else %}
+                                <span style="color: #888;">Approved</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>No book requests yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Books - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library</div>
+    <div class="navbar-nav">
+        <a href="/student">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/student" class="btn-back">← Back to Dashboard</a>
+
+    <div class="books-container">
+        <h1>🔍 Available Books</h1>
+        
+        <!-- Category Filter -->
+        <div style="margin-top: 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="/books" class="{% if not current_category %}btn-primary{% else %}btn-back{% endif %}" style="padding: 0.7rem 1.2rem; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">All Books</a>
+            {% for cat in categories %}
+                <a href="/books?category={{ cat.category }}" class="{% if current_category == cat.category %}btn-primary{% else %}btn-back{% endif %}" style="padding: 0.7rem 1.2rem; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">{{ cat.category }}</a>
+            {% endfor %}
+        </div>
+        
+        {% if books %}
+            <div class="books-grid">
+            {% for b in books %}
+                <div class="book-card">
+                    <div class="book-title">{{ b.title }}</div>
+                    <div class="book-author">by {{ b.author }}</div>
+                    <div style="color: #888; font-size: 0.8rem; margin-bottom: 0.3rem;">{{ b.category }} • Sem {{ b.semester }}</div>
+                    <div style="margin: 0.6rem 0; padding: 0.4rem; background: {% if b.status == 'available' %}#a9dfbf{% else %}#ffeaa7{% endif %}; border-radius: 4px; text-align: center; font-weight: 600; font-size: 0.8rem;">
+                        {% if b.status == 'available' %}✓ Available{% else %}⚠ Unavailable{% endif %}
+                    </div>
+                    <div class="book-actions">
+                        {% if b.id in request_status %}
+                            {% if request_status[b.id] == 'pending' %}
+                                <button disabled style="padding: 0.5rem 0.9rem; background: #fbbf24; color: #78350f; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; font-size: 0.8rem;">⏳ Pending Approval</button>
+                            {% elif request_status[b.id] == 'approved' %}
+                                <button disabled style="padding: 0.5rem 0.9rem; background: #d1fae5; color: #065f46; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; font-size: 0.8rem;">✓ Already Approved</button>
+                            {% endif %}
+                        {% else %}
+                            <a href="/request/{{ b.id }}" class="btn-request">📥 Request</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <p>No books available at the moment. Check back later!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Books - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/admin" class="btn-back">← Back to Dashboard</a>
+
+    <div class="books-container">
+        <h1>📖 All Uploaded Books</h1>
+        
+        <!-- Category Filter -->
+        <div style="margin-top: 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="/admin-books" style="padding: 0.7rem 1.2rem; text-decoration: none; border-radius: 6px; font-size: 0.9rem; background: {% if not current_category %}linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;{% else %}#95a5a6; color: white;{% endif %} font-weight: 600; transition: all 0.3s;">All Books</a>
+            {% for cat in categories %}
+                <a href="/admin-books?category={{ cat.category }}" style="padding: 0.7rem 1.2rem; text-decoration: none; border-radius: 6px; font-size: 0.9rem; background: {% if current_category == cat.category %}linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;{% else %}#95a5a6; color: white;{% endif %} font-weight: 600; transition: all 0.3s;">{{ cat.category }}</a>
+            {% endfor %}
+        </div>
+        
+        {% if books %}
+            <div class="books-grid">
+            {% for b in books %}
+                <div class="book-card">
+                    <div class="book-title">{{ b.title }}</div>
+                    <div class="book-author">by {{ b.author }}</div>
+                    <div style="color: #888; font-size: 0.8rem; margin-bottom: 0.3rem;">{{ b.category }} • Sem {{ b.semester }}</div>
+                    <div style="margin: 0.6rem 0; padding: 0.4rem; background: {% if b.status == 'available' %}#a9dfbf{% else %}#ffeaa7{% endif %}; border-radius: 4px; text-align: center; font-weight: 600; font-size: 0.8rem;">
+                        {% if b.status == 'available' %}✓ Available{% else %}⚠ Unavailable{% endif %}
+                    </div>
+                    <div class="book-actions">
+                        <a href="/toggle-status/{{ b.id }}" class="btn-request">🔄 Toggle</a>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <p>No books found. <a href="/upload">Upload the first book</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/about">About</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <a href="/admin" class="btn-back">← Back to Dashboard</a>
+
+    <div class="table-container">
+        <h1>👥 Student Management</h1>
+        
+        <!-- Search Bar -->
+        <div style="margin: 1.5rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <form method="get" action="/students" style="display: flex; gap: 1rem; width: 100%;">
+                <input type="text" name="search" placeholder="🔍 Search by name or email..." value="{{ search }}" style="flex: 1; min-width: 200px; padding: 0.9rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                <button type="submit" style="padding: 0.9rem 2rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Search</button>
+                <a href="/students" style="padding: 0.9rem 2rem; background: #95a5a6; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; align-self: center;">Clear</a>
+            </form>
+        </div>
+
+        {% if students %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Total Requests</th>
+                        <th>Approved</th>
+                        <th>Pending</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><strong>{{ student.name }}</strong></td>
+                        <td>{{ student.email }}</td>
+                        <td style="text-align: center;">{{ student.total_requests }}</td>
+                        <td style="text-align: center;">
+                            <span style="background: #a9dfbf; color: #27ae60; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem;">✓ {{ student.approved }}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <span style="background: #ffeaa7; color: #d63031; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem;">⏳ {{ student.pending }}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="/student/{{ student.id }}" style="background: #3498db; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: inline-block; transition: background 0.3s;">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <p>No students found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

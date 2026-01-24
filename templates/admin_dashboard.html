@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Library Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">📚 Library Admin</div>
+    <div class="navbar-nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/about">About</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome to Admin Dashboard</h1>
+        <p>Manage books, view requests, and oversee the library system</p>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics" style="display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+        <div class="metric-card" style="background:white;padding:1rem;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.06);flex:1;min-width:150px;text-align:center;">
+            <div style="font-size:1.6rem">📚</div>
+            <div style="font-weight:700;font-size:1.2rem">{{ total_books }}</div>
+            <div style="color:#666">Total Books</div>
+        </div>
+
+        <div class="metric-card" style="background:white;padding:1rem;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.06);flex:1;min-width:150px;text-align:center;">
+            <div style="font-size:1.6rem">📋</div>
+            <div style="font-weight:700;font-size:1.2rem">{{ total_requests }}</div>
+            <div style="color:#666">Total Requests</div>
+        </div>
+
+        <div class="metric-card" style="background:white;padding:1rem;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.06);flex:1;min-width:150px;text-align:center;">
+            <div style="font-size:1.6rem">✅</div>
+            <div style="font-weight:700;font-size:1.2rem">{{ books_approved }}</div>
+            <div style="color:#666">Approved</div>
+        </div>
+
+        <div class="metric-card" style="background:white;padding:1rem;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.06);flex:1;min-width:150px;text-align:center;">
+            <div style="font-size:1.6rem">🔁</div>
+            <div style="font-weight:700;font-size:1.2rem">{{ books_lended }}</div>
+            <div style="color:#666">Books Lended</div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <form method="get" action="/admin-books" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <input type="text" name="search" placeholder="🔍 Search by title or author..." style="flex: 1; min-width: 200px; padding: 0.9rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            <button type="submit" style="padding: 0.9rem 2rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.3s;">Search</button>
+            <a href="/admin-books" style="padding: 0.9rem 2rem; background: #95a5a6; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; align-self: center; transition: background 0.3s;">Clear</a>
+        </form>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="/upload" class="dashboard-card">
+            <div class="dashboard-card-icon">📤</div>
+            <h3>Upload New Book</h3>
+            <p>Add new books to the library collection</p>
+        </a>
+
+        <a href="/admin-books" class="dashboard-card">
+            <div class="dashboard-card-icon">📖</div>
+            <h3>View All Books</h3>
+            <p>Browse all available books in the system</p>
+        </a>
+
+        <a href="/requests" class="dashboard-card">
+            <div class="dashboard-card-icon">📋</div>
+            <h3>Book Requests</h3>
+            <p>Review and approve student requests</p>
+        </a>
+
+        <a href="/students" class="dashboard-card">
+            <div class="dashboard-card-icon">👥</div>
+            <h3>Student List</h3>
+            <p>View all students and their book requests</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
