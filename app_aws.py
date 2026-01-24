@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 import boto3
 import uuid
 from botocore.exceptions import ClientError
@@ -114,7 +115,7 @@ def register():
             if 'Item' in users_table.get_item(Key={'email': email}):
                 return "User already exists"
             
-            users_table.put_item(Item={'email': email, 'id': str(uuid.uuid4()), 'name': name, 'password': pwd, 'role': role})
+            users_table.put_item(Item={'email': email, 'id': str(uuid.uuid4()), 'name': name, 'password': generate_password_hash(pwd), 'role': role})
             notify("New Registration", f"New {role}: {name} ({email})")
             return redirect(url_for('login'))
         except ClientError as e:
@@ -128,11 +129,12 @@ def login():
         email, pwd = request.form["email"], request.form["password"]
         try:
             resp = users_table.get_item(Key={'email': email})
-            if 'Item' in resp and resp['Item']['password'] == pwd:
+            if 'Item' in resp:
                 user = resp['Item']
-                session.update(user_id=user["id"], role=user["role"], user_name=user["name"], user_email=user["email"])
-                notify("Login", f"{user['name']} logged in")
-                return redirect(url_for('admin_dashboard' if user["role"] == "admin" else 'student_dashboard'))
+                if check_password_hash(user['password'], pwd):
+                    session.update(user_id=user["id"], role=user["role"], user_name=user["name"], user_email=user["email"])
+                    notify("Login", f"{user['name']} logged in")
+                    return redirect(url_for('admin_dashboard' if user["role"] == "admin" else 'student_dashboard'))
             return "Invalid credentials"
         except ClientError as e:
             print(f"Login error: {e}")
