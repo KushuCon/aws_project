@@ -12,27 +12,11 @@ REGION = 'us-east-1'
 
 # AWS Services
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
-ssm = boto3.client('ssm', region_name=REGION)
-secrets_manager = boto3.client('secretsmanager', region_name=REGION)
 sns = boto3.client('sns', region_name=REGION)
 
-# Config helpers
-def get_secret(name):
-    try:
-        return secrets_manager.get_secret_value(SecretId=name)['SecretString']
-    except ClientError as e:
-        print(f"Secret error {name}: {e}")
-        return None
-
-def get_param(name):
-    try:
-        return ssm.get_parameter(Name=name, WithDecryption=True)['Parameter']['Value']
-    except ClientError as e:
-        print(f"Parameter error {name}: {e}")
-        return None
-
-app.secret_key = get_secret('/library-app/flask-secret-key') or 'fallback-secret-key'
-SNS_TOPIC_ARN = get_param('/library-app/sns-topic-arn')
+# Config
+app.secret_key = 'any-secret-key-for-sessions'
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:123456789012:MyLibraryTopic' # TEACHER: Paste your SNS Topic ARN here
 
 # DynamoDB Tables
 users_table = dynamodb.Table('LibraryUsers')
