@@ -156,6 +156,15 @@ def login():
             session["role"] = user["role"]
             session["user_name"] = user["name"]
             session["user_email"] = user["email"]
+            
+            # Send login notification email
+            if user["role"] == "student":
+                send_email(
+                    subject="🔐 Login Notification",
+                    recipients=["kushucon@gmail.com"],
+                    body=f"Student Login Alert:\n\nName: {user['name']}\nEmail: {user['email']}\nTime: Login successful\n\nThis is an automated notification."
+                )
+            
             return redirect("/admin" if user["role"] == "admin" else "/student")
 
         return "Invalid credentials"
