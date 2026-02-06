@@ -16,7 +16,7 @@ sns = boto3.client('sns', region_name=REGION)
 
 # Config
 app.secret_key = 'any-secret-key-for-sessions'
-SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:123456789012:MyLibraryTopic' # TEACHER: Paste your SNS Topic ARN here
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:050752651673:sns_aws_capstone' # TEACHER: Paste your SNS Topic ARN here
 
 # DynamoDB Tables
 users_table = dynamodb.Table('LibraryUsers')

@@ -1,0 +1,560 @@
+# AWS Deployment Guide - Library Management System
+
+Complete step-by-step guide to deploy your Flask application on AWS.
+
+---
+
+## 📋 Prerequisites
+
+Before starting, ensure you have:
+- ✅ AWS Account with console access
+- ✅ GitHub repository with your code
+- ✅ Basic knowledge of AWS Console navigation
+
+---
+
+## 🗂️ Step 1: Create DynamoDB Tables
+
+### 1.1 Navigate to DynamoDB
+1. Log into **AWS Console**
+2. Search for **DynamoDB** in the search bar
+3. Click **Create table**
+
+### 1.2 Create Table: `LibraryUsers`
+
+| Setting | Value |
+|---------|-------|
+| **Table name** | `LibraryUsers` |
+| **Partition key** | `email` (String) |
+| **Table settings** | Default settings |
+
+Click **Create table** and wait for status to become **Active**.
+
+#### Add Global Secondary Index (GSI):
+1. Click on the `LibraryUsers` table
+2. Go to **Indexes** tab → **Create index**
+3. Configure:
+   - **Partition key**: `role` (String)
+   - **Index name**: `RoleIndex`
+   - Click **Create index**
+
+---
+
+### 1.3 Create Table: `LibraryBooks`
+
+| Setting | Value |
+|---------|-------|
+| **Table name** | `LibraryBooks` |
+| **Partition key** | `id` (String) |
+| **Table settings** | Default settings |
+
+Click **Create table**.
+
+#### Add Global Secondary Indexes:
+
+**Index 1: StatusIndex**
+1. Go to **Indexes** tab → **Create index**
+2. Configure:
+   - **Partition key**: [status](file:///c:/Users/kushu/Desktop/greenfield_library/app_aws.py#211-224) (String)
+   - **Index name**: `StatusIndex`
+   - Click **Create index**
+
+**Index 2: CategoryStatusIndex**
+1. Click **Create index** again
+2. Configure:
+   - **Partition key**: `category` (String)
+   - **Index name**: `CategoryStatusIndex`
+   - Click **Create index**
+
+---
+
+### 1.4 Create Table: `LibraryRequests`
+
+| Setting | Value |
+|---------|-------|
+| **Table name** | `LibraryRequests` |
+| **Partition key** | `id` (String) |
+| **Table settings** | Default settings |
+
+Click **Create table**.
+
+#### Add Global Secondary Indexes:
+
+**Index 1: UserIdIndex**
+1. Go to **Indexes** tab → **Create index**
+2. Configure:
+   - **Partition key**: `user_id` (String)
+   - **Index name**: `UserIdIndex`
+   - Click **Create index**
+
+**Index 2: StatusIndex**
+1. Click **Create index** again
+2. Configure:
+   - **Partition key**: [status](file:///c:/Users/kushu/Desktop/greenfield_library/app_aws.py#211-224) (String)
+   - **Index name**: `StatusIndex`
+   - Click **Create index**
+
+> [!IMPORTANT]
+> Wait for all tables and indexes to show **Active** status before proceeding.
+
+---
+
+## 📢 Step 2: Create SNS Topic
+
+### 2.1 Navigate to SNS
+1. Search for **SNS** (Simple Notification Service) in AWS Console
+2. Click **Topics** in left sidebar
+3. Click **Create topic**
+
+### 2.2 Configure Topic
+
+| Setting | Value |
+|---------|-------|
+| **Type** | Standard |
+| **Name** | `MyLibraryTopic` |
+| **Display name** | Library Notifications |
+
+Click **Create topic**.
+
+### 2.3 Note the ARN
+After creation, you'll see the **ARN** (Amazon Resource Name) like:
+```
+arn:aws:sns:us-east-1:123456789012:MyLibraryTopic
+```
+
+> [!NOTE]
+> Copy this ARN - you'll need it later to update [app_aws.py](file:///c:/Users/kushu/Desktop/greenfield_library/app_aws.py).
+
+### 2.4 Create Email Subscription (Optional)
+1. Click **Create subscription**
+2. Configure:
+   - **Protocol**: Email
+   - **Endpoint**: your-email@example.com
+3. Click **Create subscription**
+4. Check your email and confirm the subscription
+
+---
+
+## 🔐 Step 3: Create IAM Role for EC2
+
+### 3.1 Navigate to IAM
+1. Search for **IAM** in AWS Console
+2. Click **Roles** in left sidebar
+3. Click **Create role**
+
+### 3.2 Select Trusted Entity
+- **Trusted entity type**: AWS service
+- **Use case**: EC2
+- Click **Next**
+
+### 3.3 Add Permissions
+Search and select these policies:
+- ✅ `AmazonDynamoDBFullAccess`
+- ✅ `AmazonSNSFullAccess`
+
+> [!TIP]
+> For production, create custom policies with minimal permissions instead of full access.
+
+Click **Next**.
+
+### 3.4 Name the Role
+- **Role name**: `LibraryAppEC2Role`
+- **Description**: IAM role for Library Management EC2 instance
+- Click **Create role**
+
+---
+
+## 🖥️ Step 4: Launch EC2 Instance
+
+### 4.1 Navigate to EC2
+1. Search for **EC2** in AWS Console
+2. Click **Launch instance**
+
+### 4.2 Configure Instance
+
+#### Name and OS
+- **Name**: `LibraryAppServer`
+- **AMI**: Amazon Linux 2023 (or Ubuntu 22.04)
+
+#### Instance Type
+- **Type**: `t2.micro` (Free tier eligible)
+
+#### Key Pair
+- Click **Create new key pair**
+- **Name**: `library-app-key`
+- **Type**: RSA
+- **Format**: `.pem` (for Mac/Linux) or `.ppk` (for Windows/PuTTY)
+- Click **Create key pair** and save the file
+
+#### Network Settings
+- ✅ Allow SSH traffic from: My IP (or Anywhere for testing)
+- ✅ Allow HTTP traffic from the internet
+- ✅ Allow HTTPS traffic from the internet
+
+#### Advanced Details
+- **IAM instance profile**: Select `LibraryAppEC2Role`
+
+### 4.3 Configure Security Group
+After launching, edit security group:
+1. Click on the instance
+2. Go to **Security** tab
+3. Click on the security group link
+4. Click **Edit inbound rules**
+5. Add rule:
+   - **Type**: Custom TCP
+   - **Port**: 5000
+   - **Source**: Anywhere-IPv4 (0.0.0.0/0)
+6. Click **Save rules**
+
+### 4.4 Launch Instance
+Click **Launch instance** and wait for status to become **Running**.
+
+---
+
+## 🚀 Step 5: Deploy Application on EC2
+
+### 5.1 Connect to EC2
+1. Select your instance in EC2 console
+2. Click **Connect**
+3. Use **EC2 Instance Connect** (browser-based) or SSH:
+
+```bash
+ssh -i library-app-key.pem ec2-user@<your-ec2-public-ip>
+```
+
+### 5.2 Install Dependencies
+
+#### For Amazon Linux 2023:
+```bash
+# Update system
+sudo yum update -y
+
+# Install Python 3 and Git
+sudo yum install python3 python3-pip git -y
+
+# Verify installation
+python3 --version
+git --version
+```
+
+#### For Ubuntu:
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Python 3 and Git
+sudo apt install python3 python3-pip git -y
+
+# Verify installation
+python3 --version
+git --version
+```
+
+### 5.3 Clone Your Repository
+
+```bash
+# Clone your GitHub repository
+git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+
+# Navigate to project directory
+cd YOUR-REPO-NAME
+```
+
+> [!NOTE]
+> Replace `YOUR-USERNAME/YOUR-REPO-NAME` with your actual GitHub repository path.
+
+### 5.4 Install Python Dependencies
+
+```bash
+# Install required packages
+pip3 install -r requirements.txt
+```
+
+### 5.5 Get Your AWS Account ID
+
+```bash
+# Get your AWS account ID
+aws sts get-caller-identity --query Account --output text
+```
+
+Copy the account ID (12-digit number).
+
+### 5.6 Update SNS Topic ARN
+
+```bash
+# Edit app_aws.py
+nano app_aws.py
+```
+
+Find line 19 and update with your actual ARN:
+```python
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:YOUR-ACCOUNT-ID:MyLibraryTopic'
+```
+
+**Save and exit**: Press `Ctrl+X`, then `Y`, then `Enter`
+
+### 5.7 Update Secret Key (Recommended)
+
+While editing [app_aws.py](file:///c:/Users/kushu/Desktop/greenfield_library/app_aws.py), also update line 18:
+```python
+app.secret_key = 'your-random-secret-key-here-make-it-long-and-random'
+```
+
+### 5.8 Disable Debug Mode (Production)
+
+Update line 359:
+```python
+app.run(host='0.0.0.0', port=5000, debug=False)
+```
+
+Save and exit.
+
+---
+
+## ▶️ Step 6: Run the Application
+
+### 6.1 Start the Flask App
+
+```bash
+# Run the application
+python3 app_aws.py
+```
+
+You should see output like:
+```
+ * Running on http://0.0.0.0:5000
+```
+
+### 6.2 Access Your Application
+
+Open your browser and navigate to:
+```
+http://<your-ec2-public-ip>:5000
+```
+
+> [!TIP]
+> Find your EC2 public IP in the AWS Console under EC2 → Instances → Select your instance → Public IPv4 address
+
+---
+
+## 🔄 Step 7: Keep Application Running (Production Setup)
+
+The app will stop when you close the SSH session. Use one of these methods:
+
+### Option A: Using `nohup` (Simple)
+
+```bash
+# Stop the current running app (Ctrl+C)
+
+# Run in background
+nohup python3 app_aws.py > app.log 2>&1 &
+
+# Check if running
+ps aux | grep app_aws.py
+
+# View logs
+tail -f app.log
+```
+
+### Option B: Using `systemd` (Recommended)
+
+```bash
+# Create service file
+sudo nano /etc/systemd/system/library-app.service
+```
+
+Add this content:
+```ini
+[Unit]
+Description=Library Management Flask App
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/YOUR-REPO-NAME
+ExecStart=/usr/bin/python3 /home/ec2-user/YOUR-REPO-NAME/app_aws.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Save and exit, then:
+```bash
+# Reload systemd
+sudo systemctl daemon-reload
+
+# Start service
+sudo systemctl start library-app
+
+# Enable on boot
+sudo systemctl enable library-app
+
+# Check status
+sudo systemctl status library-app
+
+# View logs
+sudo journalctl -u library-app -f
+```
+
+### Option C: Using `screen` (Quick Testing)
+
+```bash
+# Install screen
+sudo yum install screen -y  # Amazon Linux
+# or
+sudo apt install screen -y  # Ubuntu
+
+# Start screen session
+screen -S library-app
+
+# Run app
+python3 app_aws.py
+
+# Detach: Press Ctrl+A, then D
+
+# Reattach later
+screen -r library-app
+```
+
+---
+
+## ✅ Step 8: Test Your Application
+
+### 8.1 Register a User
+1. Go to `http://<your-ec2-ip>:5000`
+2. Click **Register**
+3. Create an admin account:
+   - Name: Admin User
+   - Email: admin@test.com
+   - Password: admin123
+   - Role: admin
+
+### 8.2 Test Admin Features
+1. Login with admin credentials
+2. Upload a book
+3. Check if SNS notification was sent (check your email if subscribed)
+
+### 8.3 Test Student Features
+1. Register a student account
+2. Login as student
+3. Browse books
+4. Request a book
+
+### 8.4 Verify DynamoDB
+1. Go to DynamoDB in AWS Console
+2. Check each table has data:
+   - `LibraryUsers` should have your registered users
+   - `LibraryBooks` should have uploaded books
+   - `LibraryRequests` should have book requests
+
+---
+
+## 🎯 Quick Reference
+
+### Your Application URLs
+- **Main App**: `http://<EC2-PUBLIC-IP>:5000`
+- **Login**: `http://<EC2-PUBLIC-IP>:5000/login`
+- **Register**: `http://<EC2-PUBLIC-IP>:5000/register`
+
+### Useful Commands
+
+```bash
+# Check app status (systemd)
+sudo systemctl status library-app
+
+# Restart app
+sudo systemctl restart library-app
+
+# View logs
+sudo journalctl -u library-app -f
+
+# Stop app
+sudo systemctl stop library-app
+
+# Update code from GitHub
+cd ~/YOUR-REPO-NAME
+git pull origin main
+sudo systemctl restart library-app
+```
+
+### AWS Resources Created
+| Resource | Name | Purpose |
+|----------|------|---------|
+| DynamoDB | LibraryUsers | Store user accounts |
+| DynamoDB | LibraryBooks | Store book catalog |
+| DynamoDB | LibraryRequests | Store book requests |
+| SNS Topic | MyLibraryTopic | Send notifications |
+| IAM Role | LibraryAppEC2Role | EC2 permissions |
+| EC2 Instance | LibraryAppServer | Host application |
+
+---
+
+## 🐛 Troubleshooting
+
+### App won't start
+```bash
+# Check Python version
+python3 --version  # Should be 3.7+
+
+# Reinstall dependencies
+pip3 install -r requirements.txt --force-reinstall
+
+# Check for errors
+python3 app_aws.py
+```
+
+### Can't access from browser
+- ✅ Check security group has port 5000 open
+- ✅ Verify EC2 instance is running
+- ✅ Use HTTP not HTTPS: `http://` not `https://`
+- ✅ Check app is running: `ps aux | grep app_aws.py`
+
+### DynamoDB errors
+- ✅ Verify table names are exact: `LibraryUsers`, `LibraryBooks`, `LibraryRequests`
+- ✅ Check all GSI indexes are created and Active
+- ✅ Verify IAM role is attached to EC2
+
+### SNS not sending notifications
+- ✅ Update SNS_TOPIC_ARN with correct account ID
+- ✅ Verify SNS topic exists in us-east-1 region
+- ✅ Check email subscription is confirmed
+- ✅ Verify IAM role has SNS permissions
+
+---
+
+## 🔒 Security Best Practices
+
+> [!CAUTION]
+> Before going to production:
+
+1. **Change secret key** to a strong random value
+2. **Set debug=False** in app_aws.py
+3. **Restrict security group** - don't use 0.0.0.0/0 for SSH
+4. **Use HTTPS** - set up SSL certificate
+5. **Use minimal IAM permissions** - replace FullAccess policies
+6. **Enable CloudWatch** - monitor application logs
+7. **Set up backups** - enable DynamoDB point-in-time recovery
+
+---
+
+## 🎉 Success!
+
+Your Library Management System is now running on AWS! 
+
+**Next Steps:**
+- Add more books through admin panel
+- Invite students to register
+- Monitor DynamoDB usage
+- Set up CloudWatch alarms
+- Consider using Elastic Load Balancer for high availability
+
+---
+
+## 📞 Need Help?
+
+Common issues and solutions are in the Troubleshooting section above. Make sure:
+- All AWS resources are in the **same region** (us-east-1)
+- IAM role is **attached to EC2 instance**
+- Security group has **port 5000 open**
+- SNS ARN is **correctly updated** in code
